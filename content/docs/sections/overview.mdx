@@ -1,0 +1,102 @@
+---
+title: "Landing Page Sections"
+excerpt: "All 10 landing page sections — what they contain and how to customize them."
+order: 1
+---
+
+# Landing Page Sections
+
+The landing page lives in `src/app/page.tsx` and composes 10 sections from `src/components/sections/`. Each section is a standalone Server Component (no `"use client"` unless it needs interactivity).
+
+```tsx
+// src/app/page.tsx
+export default function Home() {
+  return (
+    <main>
+      <HeroSection />
+      <LogoMarqueeSection />
+      <StatsSection />
+      <FeaturesSection />
+      <HowItWorksSection />
+      <PricingSection />
+      <TestimonialsSection />
+      <FAQSection />
+      <CTASection />
+      <FooterSection />
+    </main>
+  )
+}
+```
+
+## Section reference
+
+### HeroSection
+
+The above-the-fold hero. Includes:
+- Animated blobs (CSS keyframe, GPU-composited)
+- Terminal mockup with typewriter effect
+- Word rotation animation (Framer Motion `AnimatePresence`)
+- Avatar group + social proof copy
+- CTA buttons with gradient and outline variants
+
+**Customise:** Edit the rotating words array, headline copy, and CTA labels directly in `HeroSection.tsx`.
+
+### LogoMarqueeSection
+
+Infinite scrolling logo strip. Logos are SVG inline components. The marquee is pure CSS (`animation: marquee 30s linear infinite`) — no JavaScript.
+
+**Add logos:** Add a new `<LogoIcon />` component and include it in the marquee array.
+
+### StatsSection
+
+Three animated counter cards. Numbers count up using Framer Motion's `useMotionValue` + `useSpring` on scroll entry.
+
+**Customise:** Edit the `stats` array — `value`, `label`, `prefix`, `suffix`.
+
+### FeaturesSection
+
+6-card grid. Each card uses `<TiltCard>` for the 3D tilt-on-hover effect. Icons are Lucide SVGs.
+
+**Add a feature:** Push a new object to the `features` array with `icon`, `title`, `description`.
+
+### HowItWorksSection
+
+Numbered step-by-step section with alternating layout (text left/right). Steps animate in on scroll with stagger.
+
+### PricingSection
+
+Three-tier pricing with a "Popular" highlight badge. Toggle between monthly/annual billing (client component). Each plan uses `<TiltCard>`.
+
+**Customise:** Edit the `plans` array — `name`, `price`, `annualPrice`, `features`, `cta`.
+
+### TestimonialsSection
+
+Grid of testimonial cards with avatar, quote, name, and role. Staggered scroll entrance.
+
+### FAQSection
+
+Accordion-style FAQ. Each item expands/collapses with a Framer Motion height animation.
+
+**Add questions:** Extend the `faqs` array with `question` and `answer`.
+
+### CTASection
+
+Full-width conversion section with gradient background, headline, and dual CTA buttons.
+
+### FooterSection
+
+4-column footer with logo, nav links, social icons, and copyright. Dark-first with subtle grid background.
+
+## Global effects
+
+These are mounted in `src/app/layout.tsx` and run on every page:
+
+| Component | Description |
+|-----------|-------------|
+| `CursorSpotlight` | Radial gradient that follows the mouse cursor |
+| `ScrollProgressBar` | Thin progress bar at the top of the viewport |
+| `FloatingCTA` | Fixed "Book a demo" button that appears after scrolling 30% |
+| `LiveToast` | Animated social proof notification (appears after 3s) |
+| `Navbar` | Fixed header with scroll-aware glass effect |
+
+To disable any of these on specific pages, remove the component from `layout.tsx` or wrap it conditionally based on `usePathname()`.

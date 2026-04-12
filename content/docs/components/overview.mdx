@@ -1,0 +1,103 @@
+---
+title: "Component Overview"
+excerpt: "A tour of all 22+ components in the Sassify design system."
+order: 1
+---
+
+# Component Overview
+
+All components live in `src/components/ui/`. They're built with:
+
+- **CVA** (class-variance-authority) for variant management
+- **Framer Motion** for animations and transitions
+- **Tailwind CSS** with the Sassify design tokens
+- **Lucide React** for icons
+
+Every component is a `"use client"` component since they're interactive. Use them inside Server Components freely — Next.js handles the client boundary automatically.
+
+## Browse the live showcase
+
+Visit [/components](/components) to see every component rendered with all variants and interactive states.
+
+## Form components
+
+| Component | Import | Description |
+|-----------|--------|-------------|
+| `Input` | `@/components/ui/Input` | Text input with label, prefix/suffix, error, helper |
+| `Textarea` | `@/components/ui/Textarea` | Multi-line text input |
+| `Select` | `@/components/ui/Select` | Dropdown select with options |
+| `Checkbox` | `@/components/ui/Checkbox` | Checkbox with label and description |
+| `Switch` | `@/components/ui/Switch` | Toggle switch |
+
+## Display components
+
+| Component | Import | Description |
+|-----------|--------|-------------|
+| `Button` | `@/components/ui/Button` | 7 variants, 5 sizes, loading state |
+| `Badge` | `@/components/ui/Badge` | Status and category labels |
+| `Avatar` | `@/components/ui/Avatar` | User avatars with status indicators |
+| `Card` | `@/components/ui/Card` | Content containers with 4 variants |
+
+## Feedback components
+
+| Component | Import | Description |
+|-----------|--------|-------------|
+| `Alert` | `@/components/ui/Alert` | Info, success, warning, error messages |
+| `Skeleton` | `@/components/ui/Skeleton` | Loading placeholders |
+| `Spinner` | `@/components/ui/Spinner` | Loading spinners |
+| `Progress` | `@/components/ui/Progress` | Progress bars with variants |
+| `Tooltip` | `@/components/ui/Tooltip` | Hover tooltips on any element |
+
+## Navigation components
+
+| Component | Import | Description |
+|-----------|--------|-------------|
+| `Tabs` | `@/components/ui/Tabs` | Pills and underline tab variants |
+| `Breadcrumb` | `@/components/ui/Breadcrumb` | Hierarchical navigation |
+| `Dropdown` | `@/components/ui/Dropdown` | Context menus and action menus |
+| `Sidebar` | `@/components/ui/Sidebar` | App sidebar with collapsible sections |
+
+## Overlay components
+
+| Component | Import | Description |
+|-----------|--------|-------------|
+| `Modal` | `@/components/ui/Modal` | Dialog overlays |
+| `CommandPalette` | `@/components/ui/CommandPalette` | ⌘K search palette |
+
+## Data components
+
+| Component | Import | Description |
+|-----------|--------|-------------|
+| `Table` | `@/components/ui/Table` | Data tables with avatar support |
+| `Chart` | `@/components/ui/Chart` | Bar, Line, and Donut charts |
+
+## Example usage
+
+```tsx
+import { Button } from "@/components/ui/Button"
+import { Input } from "@/components/ui/Input"
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card"
+import { Mail } from "lucide-react"
+
+export function ContactForm() {
+  return (
+    <Card variant="glass">
+      <CardHeader>
+        <CardTitle>Get in touch</CardTitle>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-4">
+        <Input
+          label="Email"
+          type="email"
+          placeholder="you@example.com"
+          prefix={<Mail size={14} />}
+          required
+        />
+        <Button variant="gradient" className="w-full">
+          Send message
+        </Button>
+      </CardContent>
+    </Card>
+  )
+}
+```

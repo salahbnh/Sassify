@@ -1,0 +1,128 @@
+---
+title: "Scaling a SaaS to 10,000 Users with Next.js App Router"
+excerpt: "A practical deep-dive into the performance patterns, caching strategies, and architectural decisions that took us from 100 to 10,000 active users without rewriting a single page."
+date: "2026-03-05"
+author: "Mia Tanaka"
+authorRole: "Staff Engineer"
+authorAvatar: "MT"
+category: "Engineering"
+readTime: "8 min read"
+featured: false
+---
+
+We launched on a Tuesday. By Thursday we had 3,000 signups and our dashboard was timing out.
+
+This is the story of how we fixed it — and what we learned about building for scale from day one.
+
+## The problem: everything was a client component
+
+Our first mistake was reflexive. We came from a React background where *everything* is a component, and *every* component is a client component. We had `"use client"` at the top of files that never needed it.
+
+```tsx
+// ❌ Before: unnecessary client boundary
+"use client"
+import { getUserData } from "@/lib/db"
+
+export default async function ProfilePage() {
+  const user = await getUserData() // This is fine on the server!
+  return <div>{user.name}</div>
+}
+```
+
+```tsx
+// ✅ After: Server Component by default
+import { getUserData } from "@/lib/db"
+
+export default async function ProfilePage() {
+  const user = await getUserData()
+  return <div>{user.name}</div>
+}
+```
+
+Removing unnecessary client boundaries cut our JavaScript bundle by **34%** and improved Time to Interactive by 1.2 seconds on a 4G connection.
+
+## Caching everything cacheable
+
+Next.js gives you three caching layers. We weren't using any of them.
+
+### 1. Route-level caching with `revalidate`
+
+```ts
+// app/blog/page.tsx
+export const revalidate = 3600 // Revalidate every hour
+
+export default async function BlogPage() {
+  const posts = await fetchPosts() // Cached for 1 hour
+  return <PostGrid posts={posts} />
+}
+```
+
+### 2. Request memoization with `cache()`
+
+```ts
+import { cache } from "react"
+import { db } from "@/lib/db"
+
+export const getUser = cache(async (id: string) => {
+  return db.user.findUnique({ where: { id } })
+})
+```
+
+### 3. On-demand revalidation
+
+```ts
+import { revalidatePath, revalidateTag } from "next/cache"
+
+// When a post is published
+await revalidatePath("/blog")
+await revalidateTag("posts")
+```
+
+After implementing all three layers, our database query count dropped from **~180 queries/min** to **~12 queries/min** at peak traffic.
+
+## Streaming the dashboard
+
+The dashboard was the hardest part. Each widget needed different data with different freshness requirements.
+
+The breakthrough was `<Suspense>` boundaries around every widget:
+
+```tsx
+import { Suspense } from "react"
+import { MetricsCard } from "./MetricsCard"
+import { Skeleton } from "@/components/ui/Skeleton"
+
+export default function DashboardPage() {
+  return (
+    <div className="grid grid-cols-3 gap-6">
+      <Suspense fallback={<Skeleton className="h-32" />}>
+        <MetricsCard type="revenue" />
+      </Suspense>
+      <Suspense fallback={<Skeleton className="h-32" />}>
+        <MetricsCard type="users" />
+      </Suspense>
+      <Suspense fallback={<Skeleton className="h-32" />}>
+        <MetricsCard type="churn" />
+      </Suspense>
+    </div>
+  )
+}
+```
+
+Each card streamed independently. The fastest ones (cached metrics) appeared in ~40ms. The slowest (real-time analytics) appeared in ~800ms. But crucially, nothing blocked anything else.
+
+## The architecture that survived 10,000 users
+
+Here's the mental model that helped us:
+
+1. **Default to Server Components** — opt into client only when you need interactivity or browser APIs
+2. **Cache aggressively, invalidate precisely** — use tags so you only bust what changed
+3. **Stream everything** — wrap data-fetching components in Suspense; never wait for all data before rendering anything
+4. **Colocate data fetching** — fetch data in the component that needs it, not in a parent
+
+These aren't Next.js tricks. They're the fundamentals of how the web was supposed to work, finally available in a developer-friendly way.
+
+## What we'd do differently
+
+If we were starting over, we'd add proper observability from day one. We spent two weeks debugging a slow endpoint that turned out to be an N+1 query we'd introduced in a PR review — the kind of thing that's invisible without query-level tracing.
+
+Add [OpenTelemetry](https://opentelemetry.io/) instrumentation before you have users, not after.

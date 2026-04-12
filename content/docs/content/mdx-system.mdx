@@ -1,0 +1,149 @@
+---
+title: "MDX System"
+excerpt: "How the blog and docs content system works — frontmatter schema, custom components, and adding new content."
+order: 1
+---
+
+# MDX System
+
+Sassify uses [next-mdx-remote](https://github.com/hashicorp/next-mdx-remote) with App Router Server Components for all content rendering. MDX files live in `content/` at the project root.
+
+## Directory structure
+
+```
+content/
+├── blog/
+│   ├── introducing-sassify.mdx
+│   ├── scaling-saas-with-nextjs.mdx
+│   └── design-system-dark-mode.mdx
+└── docs/
+    ├── getting-started/
+    │   ├── introduction.mdx
+    │   └── installation.mdx
+    ├── components/
+    │   └── overview.mdx
+    ├── design-system/
+    │   ├── colors.mdx
+    │   └── animations.mdx
+    ├── sections/
+    │   └── overview.mdx
+    └── content/
+        └── mdx-system.mdx    ← this file
+```
+
+## Blog frontmatter schema
+
+```yaml
+---
+title: "Post title"
+excerpt: "One-sentence description shown in cards and meta tags"
+date: "2026-04-08"        # ISO date, used for sort order
+author: "Full Name"
+authorRole: "Job title"
+authorAvatar: "FN"        # Two initials for the avatar fallback
+category: "Engineering"   # Product | Engineering | Design
+readTime: "6 min read"
+featured: true            # One post per page shown as featured hero
+---
+```
+
+## Docs frontmatter schema
+
+```yaml
+---
+title: "Page title"
+excerpt: "One-sentence description for meta tags"
+order: 1                  # Sort order within the section
+---
+```
+
+## Adding a blog post
+
+1. Create `content/blog/your-slug.mdx`
+2. Add frontmatter (see schema above)
+3. Write MDX content below the frontmatter
+
+The post will appear automatically on `/blog` — no code changes needed.
+
+## Adding a docs page
+
+1. Create the MDX file in the appropriate `content/docs/<section>/` folder
+2. Add it to `src/lib/docs-nav.ts`:
+
+```ts
+// src/lib/docs-nav.ts
+export const docsNav: DocNavSection[] = [
+  {
+    title: "My New Section",
+    items: [
+      { title: "My Page", slug: ["my-section", "my-page"] },
+    ],
+  },
+]
+```
+
+3. Create the corresponding folder if it doesn't exist:
+   ```
+   content/docs/my-section/my-page.mdx
+   ```
+
+## Custom MDX components
+
+All custom components are in `src/components/mdx/MdxComponents.tsx`. They're automatically applied to all MDX content — no imports needed inside `.mdx` files.
+
+### Available custom components
+
+**`<Callout>`** — Info callout with a lightbulb icon
+
+```mdx
+<Callout title="Pro tip">
+  You can use any HTML or React components inside MDX.
+</Callout>
+```
+
+**`<Warning>`** — Warning callout with a triangle icon
+
+```mdx
+<Warning title="Breaking change">
+  This API changed in v1.2.0.
+</Warning>
+```
+
+**`<Success>`** — Success callout with a check icon
+
+```mdx
+<Success title="Done">
+  Your setup is complete.
+</Success>
+```
+
+### Styled Markdown elements
+
+All standard Markdown elements are auto-styled:
+
+| Element | Styling |
+|---------|---------|
+| `# H1` | 3xl bold, tight tracking |
+| `## H2` | 2xl bold, bottom border |
+| `### H3` | xl semibold |
+| `` `inline code` `` | Primary colored, muted background |
+| ` ```lang ` | Dark code block with syntax highlighting |
+| `> blockquote` | Info-styled panel with icon |
+| `**bold**` | Semibold foreground |
+| `[link](url)` | Primary underline, opens external in new tab |
+| `---` | Subtle divider |
+| Tables | Rounded border, striped rows |
+
+## Syntax highlighting
+
+Code blocks are highlighted by [rehype-pretty-code](https://rehype-pretty-code.netlify.app/) using the `github-dark-dimmed` theme. Specify the language after the opening fence:
+
+````mdx
+```tsx
+export function MyComponent() {
+  return <div>Hello</div>
+}
+```
+````
+
+Supported languages: `tsx`, `ts`, `jsx`, `js`, `bash`, `css`, `json`, `yaml`, `mdx`, and all languages supported by Shiki.

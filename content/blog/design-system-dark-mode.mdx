@@ -1,0 +1,149 @@
+---
+title: "Building a Design System with True Dark Mode in 2026"
+excerpt: "Most dark modes are an afterthought — a CSS invert filter with a prayer. Here's how we built Sassify's design system with dark mode as a first-class citizen, using CSS custom properties and zero JavaScript for the initial render."
+date: "2026-02-20"
+author: "Jordan Park"
+authorRole: "Design Engineer"
+authorAvatar: "JP"
+category: "Design"
+readTime: "6 min read"
+featured: false
+---
+
+Dark mode is easy to add. Dark mode that actually looks good is hard.
+
+The difference comes down to a single decision made at the start of the project: are you treating dark mode as a color inversion, or as a separate visual language?
+
+## Why CSS custom properties are the answer
+
+The naive approach is media queries:
+
+```css
+/* ❌ Scattered, hard to maintain */
+.card { background: white; }
+@media (prefers-color-scheme: dark) {
+  .card { background: #1a1a1a; }
+}
+```
+
+The right approach is semantic tokens via CSS custom properties:
+
+```css
+/* ✅ Single source of truth */
+:root {
+  --background: #fafafe;
+  --card: rgba(255, 255, 255, 0.8);
+  --border: rgba(0, 0, 0, 0.08);
+  --muted-foreground: #64748b;
+}
+
+.dark {
+  --background: #050508;
+  --card: rgba(255, 255, 255, 0.03);
+  --border: rgba(255, 255, 255, 0.08);
+  --muted-foreground: #94a3b8;
+}
+
+/* Components reference tokens, never raw colors */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+}
+```
+
+The component never needs to know about the theme. You add new components and they automatically respect dark mode — because they use tokens, not raw values.
+
+## The glass morphism problem
+
+Glass effects are notoriously hard to get right across themes. In light mode, you want a frosted-white blur. In dark mode, you want a barely-there dark glass.
+
+Our solution was a set of glass-specific tokens:
+
+```css
+:root {
+  --glass-bg: rgba(255, 255, 255, 0.65);
+  --glass-border: rgba(0, 0, 0, 0.07);
+  --glass-blur: 24px;
+}
+
+.dark {
+  --glass-bg: rgba(255, 255, 255, 0.04);
+  --glass-border: rgba(255, 255, 255, 0.08);
+}
+
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+}
+```
+
+One utility class. Works in both themes. The navbar, modals, cards — everything that needs glass just adds `.glass`.
+
+## Zero FOUC (Flash of Unstyled Content)
+
+The hardest part of class-based dark mode is avoiding the flash when a user who prefers dark mode first loads your page.
+
+The trick is an inline script that runs before the browser paints:
+
+```tsx
+// app/layout.tsx
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            (function() {
+              const stored = localStorage.getItem('theme');
+              const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+              if (stored === 'dark' || (!stored && prefersDark)) {
+                document.documentElement.classList.add('dark');
+              }
+            })();
+          `
+        }} />
+      </head>
+      <body>{children}</body>
+    </html>
+  )
+}
+```
+
+This runs synchronously before the first paint. No flash. Ever.
+
+> `suppressHydrationWarning` on `<html>` is required because the class may differ between server render and client hydration. Next.js will suppress that specific warning.
+
+## Smooth transitions
+
+The body gets a transition on background and color:
+
+```css
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+```
+
+But we deliberately *don't* put transitions on everything — only the body. Cascading transitions cause components to "wave" when you switch theme, which looks broken. The body transition is sufficient; browsers handle the repaint correctly.
+
+## What we got wrong first
+
+We started with CSS variables that used RGB triplets so we could compose opacity:
+
+```css
+/* Our first attempt */
+--primary-rgb: 168 85 247;
+--primary: rgb(var(--primary-rgb));
+
+/* So we could do this */
+background: rgb(var(--primary-rgb) / 0.1);
+```
+
+This works, but it's verbose and easy to forget. We switched to using separate muted/accent tokens instead:
+
+```css
+--accent: rgba(168, 85, 247, 0.12);    /* 12% opacity purple */
+--accent-foreground: #a855f7;           /* Full purple */
+```
+
+Explicit tokens are more readable and easier to tune per-theme.

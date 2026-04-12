@@ -1,0 +1,62 @@
+---
+title: "Introducing Sassify: The Modern SaaS Starter"
+excerpt: "We built Sassify to give founders and developers a production-ready foundation — so you can skip the boilerplate and ship your product in days, not months."
+date: "2026-03-18"
+author: "Alex Chen"
+authorRole: "Co-founder & CEO"
+authorAvatar: "AC"
+category: "Product"
+readTime: "5 min read"
+featured: true
+---
+
+Building a SaaS product is hard. Building the *infrastructure* for a SaaS product — the auth, the billing, the UI system, the landing page, the docs — is a completely different kind of hard.
+
+We've done it a dozen times. And every time, we spent weeks rebuilding the same foundation before we could write a single line of business logic.
+
+**Sassify is our answer to that problem.**
+
+## What we built
+
+Sassify is a full-stack SaaS starter that gives you everything you need to launch:
+
+- **Landing page** — animated hero, social proof, pricing table, FAQ — all ready to customize
+- **Component library** — 22+ production-ready UI components built with CVA and Framer Motion
+- **Auth pages** — login, signup, forgot password with dark/light mode
+- **Blog & docs** — MDX-powered content system, exactly like this post
+- **Dashboard** — metrics, charts, sidebar navigation *(coming soon)*
+
+## The stack we chose
+
+We were opinionated about the technology. Here's what we landed on and why:
+
+```tsx
+// Your app, instantly
+import { HeroSection } from "@/components/sections/HeroSection"
+import { PricingSection } from "@/components/sections/PricingSection"
+
+export default function Home() {
+  return (
+    <main>
+      <HeroSection />
+      <PricingSection />
+    </main>
+  )
+}
+```
+
+**Next.js 14 App Router** — because RSC and streaming are genuinely transformative for SaaS performance. Your marketing pages load in milliseconds; your dashboard loads only what it needs.
+
+**Tailwind CSS** — the best way we've found to keep styles consistent at scale without a design team. Pair it with CSS custom properties for theming and you get dark mode for free.
+
+**Framer Motion** — micro-interactions aren't optional in 2026. Users expect things to feel alive. Framer Motion makes that achievable without writing raw CSS animations.
+
+## What's next
+
+We're actively building Phase 3 — backend integration with Clerk, Stripe, and Prisma. If you want early access, [join our waitlist](#).
+
+> We believe every founder deserves a great starting point. Sassify is ours to you.
+
+The best startups aren't the ones that built the most infrastructure. They're the ones that skipped it and focused on the problem.
+
+Let's build.
