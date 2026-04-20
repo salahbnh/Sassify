@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
         // Expand the subscription to get full details
         const subscription = await stripe.subscriptions.retrieve(
           session.subscription as string
-        ) as Stripe.Subscription & { current_period_end: number };
+        ) as unknown as Stripe.Subscription & { current_period_end: number };
 
         const priceItem = subscription.items.data[0];
         const productId = priceItem?.price.product as string | undefined;
@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
       }
 
       case "customer.subscription.updated": {
-        const subscription = event.data.object as Stripe.Subscription & { current_period_end: number };
+        const subscription = event.data.object as unknown as Stripe.Subscription & { current_period_end: number };
         const clerkId = subscription.metadata?.clerkId;
         if (!clerkId) break;
 
@@ -97,7 +97,7 @@ export async function POST(req: NextRequest) {
       }
 
       case "customer.subscription.deleted": {
-        const subscription = event.data.object as Stripe.Subscription & { current_period_end: number };
+        const subscription = event.data.object as unknown as Stripe.Subscription & { current_period_end: number };
         const clerkId = subscription.metadata?.clerkId;
         if (!clerkId) break;
 
