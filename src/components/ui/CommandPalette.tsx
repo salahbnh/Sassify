@@ -60,7 +60,7 @@ export function CommandPalette({ items, open, onClose, placeholder = "Search com
     return () => document.removeEventListener("keydown", handler);
   }, [open, filtered, activeIndex, onClose]);
 
-  const categories = [...new Set(filtered.map((i) => i.category ?? ""))];
+  const categories = Array.from(new Set(filtered.map((i) => i.category ?? "")));
 
   return (
     <AnimatePresence>

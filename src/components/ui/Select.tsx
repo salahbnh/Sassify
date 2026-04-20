@@ -2,18 +2,19 @@
 
 import { cn } from "@/lib/utils";
 import { ChevronDown } from "lucide-react";
-import { SelectHTMLAttributes, forwardRef } from "react";
+import { SelectHTMLAttributes, ReactNode, forwardRef } from "react";
 
-interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
+interface SelectProps extends Omit<SelectHTMLAttributes<HTMLSelectElement>, "prefix"> {
   label?: string;
   error?: string;
   helper?: string;
   options: { value: string; label: string; disabled?: boolean }[];
   placeholder?: string;
+  prefix?: ReactNode;
 }
 
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(
-  ({ label, error, helper, options, placeholder, className, id, ...props }, ref) => {
+  ({ label, error, helper, options, placeholder, prefix, className, id, ...props }, ref) => {
     const inputId = id ?? label?.toLowerCase().replace(/\s+/g, "-");
     return (
       <div className="flex flex-col gap-1.5 w-full">
@@ -24,11 +25,17 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           </label>
         )}
         <div className="relative">
+          {prefix && (
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none z-10 flex items-center">
+              {prefix}
+            </span>
+          )}
           <select
             ref={ref}
             id={inputId}
             className={cn(
               "w-full h-10 rounded-lg border border-border bg-input pl-3 pr-9 text-sm text-foreground appearance-none cursor-pointer",
+              prefix && "pl-9",
               "focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent",
               "transition-all duration-200",
               "disabled:opacity-50 disabled:cursor-not-allowed",

@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
         // Expand the subscription to get full details
         const subscription = await stripe.subscriptions.retrieve(
           session.subscription as string
-        ) as unknown as Stripe.Subscription & { current_period_end: number };
+        );
 
         const priceItem = subscription.items.data[0];
         const productId = priceItem?.price.product as string | undefined;
@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
           stripeProductId:      productId ?? "",
           plan:                 productIdToPlan(productId ?? ""),
           status:               toSubStatus(subscription.status),
-          currentPeriodEnd:     new Date(subscription.current_period_end * 1000),
+          currentPeriodEnd:     new Date((priceItem?.current_period_end ?? 0) * 1000),
           cancelAtPeriodEnd:    subscription.cancel_at_period_end,
         });
 
@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
       }
 
       case "customer.subscription.updated": {
-        const subscription = event.data.object as unknown as Stripe.Subscription & { current_period_end: number };
+        const subscription = event.data.object as Stripe.Subscription;
         const clerkId = subscription.metadata?.clerkId;
         if (!clerkId) break;
 
@@ -90,14 +90,14 @@ export async function POST(req: NextRequest) {
           stripeProductId:      productId ?? "",
           plan:                 productIdToPlan(productId ?? ""),
           status:               toSubStatus(subscription.status),
-          currentPeriodEnd:     new Date(subscription.current_period_end * 1000),
+          currentPeriodEnd:     new Date((priceItem?.current_period_end ?? 0) * 1000),
           cancelAtPeriodEnd:    subscription.cancel_at_period_end,
         });
         break;
       }
 
       case "customer.subscription.deleted": {
-        const subscription = event.data.object as unknown as Stripe.Subscription & { current_period_end: number };
+        const subscription = event.data.object as Stripe.Subscription;
         const clerkId = subscription.metadata?.clerkId;
         if (!clerkId) break;
 
@@ -112,7 +112,7 @@ export async function POST(req: NextRequest) {
           stripeProductId:      productId ?? "",
           plan:                 productIdToPlan(productId ?? ""),
           status:               SubStatus.CANCELED,
-          currentPeriodEnd:     new Date(subscription.current_period_end * 1000),
+          currentPeriodEnd:     new Date((priceItem?.current_period_end ?? 0) * 1000),
           cancelAtPeriodEnd:    true,
         });
         break;

@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import { Info, AlertTriangle, Lightbulb, CheckCircle2 } from "lucide-react";
-import type { ReactNode } from "react";
+import type { HTMLAttributes, ReactNode } from "react";
 
 /* ── Typography ─────────────────────────────────── */
 
@@ -82,7 +82,7 @@ export const mdxComponents = {
       </code>
     );
   },
-  pre: ({ children, ...props }: { children?: ReactNode; [key: string]: unknown }) => (
+  pre: ({ children, ...props }: HTMLAttributes<HTMLPreElement>) => (
     <pre
       {...props}
       className={cn(
