@@ -5,12 +5,12 @@ import type { ReactNode } from "react";
 /* ── Typography ─────────────────────────────────── */
 
 export const mdxComponents = {
-  h1: ({ children }: { children: ReactNode }) => (
+  h1: ({ children }: { children?: ReactNode }) => (
     <h1 className="mt-10 mb-4 scroll-mt-24 text-3xl font-bold tracking-tight text-foreground first:mt-0">
       {children}
     </h1>
   ),
-  h2: ({ children, ...props }: { children: ReactNode; id?: string }) => (
+  h2: ({ children, ...props }: { children?: ReactNode; id?: string }) => (
     <h2
       {...props}
       className="mt-10 mb-4 scroll-mt-24 text-2xl font-bold tracking-tight text-foreground border-b border-border/60 pb-2"
@@ -18,7 +18,7 @@ export const mdxComponents = {
       {children}
     </h2>
   ),
-  h3: ({ children, ...props }: { children: ReactNode; id?: string }) => (
+  h3: ({ children, ...props }: { children?: ReactNode; id?: string }) => (
     <h3
       {...props}
       className="mt-8 mb-3 scroll-mt-24 text-xl font-semibold text-foreground"
@@ -26,7 +26,7 @@ export const mdxComponents = {
       {children}
     </h3>
   ),
-  h4: ({ children, ...props }: { children: ReactNode; id?: string }) => (
+  h4: ({ children, ...props }: { children?: ReactNode; id?: string }) => (
     <h4
       {...props}
       className="mt-6 mb-2 scroll-mt-24 text-base font-semibold text-foreground"
@@ -34,16 +34,16 @@ export const mdxComponents = {
       {children}
     </h4>
   ),
-  p: ({ children }: { children: ReactNode }) => (
+  p: ({ children }: { children?: ReactNode }) => (
     <p className="mb-5 leading-7 text-foreground/85">{children}</p>
   ),
-  strong: ({ children }: { children: ReactNode }) => (
+  strong: ({ children }: { children?: ReactNode }) => (
     <strong className="font-semibold text-foreground">{children}</strong>
   ),
-  em: ({ children }: { children: ReactNode }) => (
+  em: ({ children }: { children?: ReactNode }) => (
     <em className="italic text-foreground/80">{children}</em>
   ),
-  a: ({ href, children }: { href?: string; children: ReactNode }) => (
+  a: ({ href, children }: { href?: string; children?: ReactNode }) => (
     <a
       href={href}
       className="text-primary underline underline-offset-4 decoration-primary/40 hover:decoration-primary transition-colors duration-150 cursor-pointer"
@@ -56,13 +56,13 @@ export const mdxComponents = {
   hr: () => <hr className="my-8 border-border/60" />,
 
   /* ── Lists ────────────────────────────── */
-  ul: ({ children }: { children: ReactNode }) => (
+  ul: ({ children }: { children?: ReactNode }) => (
     <ul className="mb-5 ml-5 flex flex-col gap-1.5 list-none">{children}</ul>
   ),
-  ol: ({ children }: { children: ReactNode }) => (
+  ol: ({ children }: { children?: ReactNode }) => (
     <ol className="mb-5 ml-5 flex flex-col gap-1.5 list-decimal list-outside">{children}</ol>
   ),
-  li: ({ children }: { children: ReactNode }) => (
+  li: ({ children }: { children?: ReactNode }) => (
     <li className="leading-7 text-foreground/85 flex items-start gap-2">
       <span className="mt-2.5 size-1.5 shrink-0 rounded-full bg-primary/70" />
       <span>{children}</span>
@@ -70,7 +70,7 @@ export const mdxComponents = {
   ),
 
   /* ── Code ─────────────────────────────── */
-  code: ({ children, className }: { children: ReactNode; className?: string }) => {
+  code: ({ children, className }: { children?: ReactNode; className?: string }) => {
     // Block code (inside <pre>) — rehype-pretty-code handles the heavy lifting
     if (className) {
       return <code className={className}>{children}</code>;
@@ -82,7 +82,7 @@ export const mdxComponents = {
       </code>
     );
   },
-  pre: ({ children, ...props }: { children: ReactNode; [key: string]: unknown }) => (
+  pre: ({ children, ...props }: { children?: ReactNode; [key: string]: unknown }) => (
     <pre
       {...props}
       className={cn(
@@ -97,7 +97,7 @@ export const mdxComponents = {
   ),
 
   /* ── Blockquote ───────────────────────── */
-  blockquote: ({ children }: { children: ReactNode }) => (
+  blockquote: ({ children }: { children?: ReactNode }) => (
     <blockquote className="my-6 flex gap-4 rounded-xl border border-border/60 bg-muted/40 px-5 py-4">
       <span className="mt-0.5 shrink-0 text-primary">
         <Info size={16} />
@@ -107,31 +107,31 @@ export const mdxComponents = {
   ),
 
   /* ── Table ────────────────────────────── */
-  table: ({ children }: { children: ReactNode }) => (
+  table: ({ children }: { children?: ReactNode }) => (
     <div className="my-6 overflow-x-auto rounded-xl border border-border/60">
       <table className="w-full text-sm">{children}</table>
     </div>
   ),
-  thead: ({ children }: { children: ReactNode }) => (
+  thead: ({ children }: { children?: ReactNode }) => (
     <thead className="bg-muted/50 border-b border-border/60">{children}</thead>
   ),
-  tbody: ({ children }: { children: ReactNode }) => (
+  tbody: ({ children }: { children?: ReactNode }) => (
     <tbody className="divide-y divide-border/40">{children}</tbody>
   ),
-  tr: ({ children }: { children: ReactNode }) => <tr>{children}</tr>,
-  th: ({ children }: { children: ReactNode }) => (
+  tr: ({ children }: { children?: ReactNode }) => <tr>{children}</tr>,
+  th: ({ children }: { children?: ReactNode }) => (
     <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
       {children}
     </th>
   ),
-  td: ({ children }: { children: ReactNode }) => (
+  td: ({ children }: { children?: ReactNode }) => (
     <td className="px-4 py-3 text-foreground/85">{children}</td>
   ),
 };
 
 /* ── Custom callout components ────────────────── */
 
-interface CalloutProps { children: ReactNode; title?: string }
+interface CalloutProps { children?: ReactNode; title?: string }
 
 export function Callout({ children, title }: CalloutProps) {
   return (
