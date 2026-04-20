@@ -7,7 +7,6 @@ import {
   MessageSquare, UserPlus, CreditCard, Zap, AlertCircle, Star, GitMerge,
 } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
-import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 

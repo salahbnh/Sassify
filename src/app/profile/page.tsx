@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MapPin, LinkIcon, Calendar, GitBranch, Star, Eye, ArrowUpRight, Zap, Users, MessageSquare, GitMerge, Package } from "lucide-react";
-import { Avatar } from "@/components/ui/Avatar";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
